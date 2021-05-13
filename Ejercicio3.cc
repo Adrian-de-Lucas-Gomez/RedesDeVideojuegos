@@ -7,16 +7,15 @@
 #include <iostream>
 
 
-int main(int argc, char** argv) //argv[1] direccion, argv[2] puerti, argv[3] comando
+int main(int argc, char** argv) //argv[1] direccion, argv[2] puerto usado, argv[3] comando a mandar
 {
     struct addrinfo infoaddres;
     struct addrinfo * sockaddr, *aux;
 
     memset((void*) &infoaddres, 0, sizeof(struct addrinfo));    //Reservamos memoria
 
-    //infoaddres.ai_flags = AI_PASSIVE;
-    infoaddres.ai_family = AF_INET; //Mira para IPv4 y para IPv6
-    infoaddres.ai_socktype = SOCK_DGRAM; //Puede ser TCP o UDP
+    infoaddres.ai_family = AF_INET; //Mira para IPv4
+    infoaddres.ai_socktype = SOCK_DGRAM; //UDP
 
     //Probamos a ve si aparece la direccion en la red
     int info = getaddrinfo(argv[1], argv[2], &infoaddres, &sockaddr); 
@@ -28,13 +27,13 @@ int main(int argc, char** argv) //argv[1] direccion, argv[2] puerti, argv[3] com
         sock = socket(aux->ai_family, aux->ai_socktype, 0); //creamos un socket
         
         if(sock == -1) 
-            continue;
-        if(connect(sock, aux->ai_addr, aux->ai_addrlen) != -1)
-            break;
-
-        close(sock); //Por si el encontramos no es valido
+            continue;   //Que pase a la siguiente entrada que esta no ha valido
+        
+        int connection = connect(sock, aux->ai_addr, aux->ai_addrlen);
+        if(connection != -1){
+            break;  //Si la conexion fue correcta nos salimos
+        }
     }
-
     if(aux == NULL){
         std::cout << "El socket no fue valido\n";
         return -1;
@@ -53,6 +52,13 @@ int main(int argc, char** argv) //argv[1] direccion, argv[2] puerti, argv[3] com
     int recievedBytes= recvfrom(sock, buffer, sizeof(buffer), 0, &client, & clienteleng);
 
     //Comprobamos que llegue la informacion bien
+    if(recievedBytes < 0){
+        std::cout << "El mensaje no llegó bien\n";
+        return -1;
+    }
+
+    //Si llega bien
+    std::cout << buffer << "\n";
 
     return 0;
 }
