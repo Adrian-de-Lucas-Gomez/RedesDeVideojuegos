@@ -33,7 +33,8 @@ int main(int argc, char** argv) //argv[1] indica la direccion
         return -1;
     }
 
-    bind(sock, sockaddr->ai_addr, sockaddr->ai_addrlen);
+    bind(sock,(struct sockaddr *) sockaddr->ai_addr, sockaddr->ai_addrlen);
+    listen(sock, 5)
     
     while(true){
         char host[NI_MAXHOST];
@@ -45,9 +46,15 @@ int main(int argc, char** argv) //argv[1] indica la direccion
 
         int bytes= recvfrom(sock, (void*) buffer, 80, 0, &client, &clienteleng);
 
-        getnameinfo(&client, clienteleng, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
+        getnameinfo((struct sockaddr *) &client, clienteleng, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
+        printf("Conexión desde Host:%s Puerto:%s\n",host, service);
 
-        sendto(sock, buffer, bytes, 0, &client, clienteleng);
+        //sendto(sock, buffer, bytes, 0, &client, clienteleng);
+        do {
+            c = recv(cliente_sd, &(buffer[i]), 1, 0);
+        while ( c >= 0 && i < 79 && buffer[i++] != '\n');
+  
+        send(cliente_sd, buffer, i, 0);
     }
 
     freeaddrinfo(sockaddr);   //Limpiamos la memoria
