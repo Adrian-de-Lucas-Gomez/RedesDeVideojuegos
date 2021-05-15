@@ -47,7 +47,12 @@ int main(int argc, char** argv)
 
     for(int i=0; i< 6; i++){    //Vamos a crear 6 threads
         //Los hilos hijos se crean con una funcion lambda
-        hilos[i]=std::thread([&](){ ThreadMessage msg = ThreadMessage(sock); });
+        //hilos[i]=std::thread([&](){ ThreadMessage msg = ThreadMessage(sock); });//Tratamiento de la conexion desde una thread hija
+        ThreadMessage* handler = new ThreadMessage(sock);
+
+        //Creamos una thread con una funcion lambda (primero lo maneja y luego se destruye)
+        std::thread([&handler](){ handler->manageConnection();  delete handler;}).detach();
+
     }
 
     bool funcionando=true;
@@ -63,7 +68,8 @@ int main(int argc, char** argv)
 
     //Esperamos a que acabe cada uno de los hilos hijos
     for(int i=0; 1<5; i++){
-        hilos[i].join();
+        //hilos[i].join();
+        //hilos[i].detach();
     }
 
     close(sock);

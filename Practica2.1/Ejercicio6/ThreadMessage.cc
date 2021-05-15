@@ -1,22 +1,27 @@
 class ThreadMessage{
     private:
 
+    int socketUsed;
+
     int sendInfo(const char *letra, int socket, sockaddr client, socklen_t clienteleng){
-    char buffer[80] = {};
-    time_t tiempo;
-    struct tm * infoTiempo;
+        char buffer[80] = {};
+        time_t tiempo;
+        struct tm * infoTiempo;
 
-    tiempo = time(NULL);
-    infoTiempo = localtime(&tiempo);
+        tiempo = time(NULL);
+        infoTiempo = localtime(&tiempo);
 
-    strftime(buffer, sizeof(buffer), letra, infoTiempo);
+        strftime(buffer, sizeof(buffer), letra, infoTiempo);
 
-    return sendto(socket, buffer, sizeof(buffer), 0, &client, clienteleng);
-    
+        return sendto(socket, buffer, sizeof(buffer), 0, &client, clienteleng);
     }
 
     public:
-    ThreadMessage(const int &socketUsed){
+    ThreadMessage(int socket){
+        socketUsed = socket;
+    }
+
+    int manageConnection(){
         //Es como el update que haciamos en el ejercicio2
         char host[NI_MAXHOST];
         char service[NI_MAXSERV];
@@ -42,7 +47,7 @@ class ThreadMessage{
 
             if(bytes == -1){
                 std::cout << "Se ha producido un error al recibir el mensaje\n";
-                //return -1;
+                return -1;
             }
             //std::cout << bytes << " bytes de " << client << "\n";
             std::cout << "Comando: " << buffer[0] << "\n";
@@ -71,7 +76,7 @@ class ThreadMessage{
 
             if(bytesSend < 0){
                 std::cout << "No se pudo enviar la respuesta\n";
-                //return -1;
+                return -1;
             }
             std::cout << "El thread " << std::this_thread::get_id() << " se fue a dormir";
 
@@ -79,5 +84,7 @@ class ThreadMessage{
 
             std::cout << "El thread " << std::this_thread::get_id() << " se acaba de despertar";
         }
+
+        return 0;
     }
 };
