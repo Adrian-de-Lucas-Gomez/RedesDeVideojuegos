@@ -6,15 +6,14 @@
 #include <iostream>
 #include <unistd.h>
 
-int main(int argc, char** argv) //argv[1] indica la direccion
+int main(int argc, char** argv) //argv[1] es la direccion y argv[2] es el puerto
 {
     struct addrinfo infoaddres;
     struct addrinfo * sockaddr;
 
     memset((void*) &infoaddres, 0, sizeof(struct addrinfo));    //Reservamos memoria
 
-    //infoaddres.ai_flags = AI_PASSIVE;
-    infoaddres.ai_family = AF_INET; //Mira para IPv4 y para IPv6
+    infoaddres.ai_family = AF_INET; //Mira para IPv4
     infoaddres.ai_socktype = SOCK_STREAM; //TCP
 
     //Probamos a ve si aparece la direccion en la red
@@ -37,7 +36,7 @@ int main(int argc, char** argv) //argv[1] indica la direccion
     bind(sock, sockaddr->ai_addr, sockaddr->ai_addrlen);
     freeaddrinfo(sockaddr); 
 
-    listen(sock, 6);    //Se podrian meter 6 conexiones teóricamente
+    listen(sock, 6);    //Se podrian meter 6 conexiones a la lista de espera
     //Solo gestiona la primera conexion que llega :'(
 
     char host[NI_MAXHOST];

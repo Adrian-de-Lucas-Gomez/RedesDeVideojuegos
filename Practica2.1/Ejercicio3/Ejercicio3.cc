@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-int main(int argc, char** argv) //argv[1] direccion, argv[2] puerto usado, argv[3] comando a mandar
+int main(int argc, char** argv) //argv[1] direccion, argv[2] puerto usado y argv[3] comando a mandar
 {
     struct addrinfo infoaddres;
     struct addrinfo * sockaddr, *aux;

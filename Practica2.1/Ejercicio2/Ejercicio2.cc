@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <time.h>
 
+//Metodo que te devuelve la fecha u hora segun que le pidas
 int sendInfo(const char *letra, int socket, sockaddr client, socklen_t clienteleng){
     char buffer[80] = {};
     time_t tiempo;
@@ -20,7 +21,7 @@ int sendInfo(const char *letra, int socket, sockaddr client, socklen_t clientele
     return sendto(socket, buffer, sizeof(buffer), 0, &client, clienteleng);
 }
 
-int main(int argc, char** argv) //argv[1] indica la direccion
+int main(int argc, char** argv) //argv[1] es la direccion y argv[2] es el puerto
 {
     struct addrinfo infoaddres;
     struct addrinfo * sockaddr;
@@ -28,8 +29,8 @@ int main(int argc, char** argv) //argv[1] indica la direccion
     memset((void*) &infoaddres, 0, sizeof(struct addrinfo));    //Reservamos memoria
 
     //infoaddres.ai_flags = AI_PASSIVE;
-    infoaddres.ai_family = AF_INET; //Mira para IPv4 y para IPv6
-    infoaddres.ai_socktype = SOCK_DGRAM; //Puede ser TCP o UDP
+    infoaddres.ai_family = AF_INET; //Mira para IPv4
+    infoaddres.ai_socktype = SOCK_DGRAM; //UDP
 
     //Probamos a ve si aparece la direccion en la red
     int info = getaddrinfo(argv[1], argv[2], &infoaddres, &sockaddr); //HTTP porque es por red¿?
@@ -63,7 +64,6 @@ int main(int argc, char** argv) //argv[1] indica la direccion
 
         getnameinfo(&client, clienteleng, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
         std::cout << "Se conectaron desde: " << host << ":" << service << "\n";
-        //int cliente_sd = accept(sock, (struct sockaddr *) &client, &clienteleng);
         
         int bytes = recvfrom(sock, buffer, sizeof(buffer), 0, &client, &clienteleng);
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv) //argv[1] indica la direccion
             std::cout << "Se ha producido un error al recibir el mensaje\n";
             return -1;
         }
-        //std::cout << bytes << " bytes de " << client << "\n";
+        
         std::cout << "Comando: " << buffer[0] << "\n";
 
         int bytesSend = 0;
