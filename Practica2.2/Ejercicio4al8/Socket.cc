@@ -16,8 +16,7 @@ Socket::Socket(const char * address, const char * port):sd(-1)
     infoaddres.ai_socktype = SOCK_DGRAM; //UDP
 
     //Probamos a ve si aparece la direccion en la red
-    int info = getaddrinfo(address, port, &infoaddres, &sockaddr); //HTTP porque es por red¿?
-
+    int info = getaddrinfo(address, port, &infoaddres, &sockaddr); 
     if(info != 0)   //Ha habido un error y acaba el programa
     { 
         std::cout << "Error: Servicio desconocido\n";
@@ -69,7 +68,7 @@ int Socket::send(Serializable& obj, const Socket& sock)
     //Serializar el objeto
     obj.to_bin();   //Llamamos al metodo de serializacion del objeto a mandar
     //Enviar el objeto binario a sock usando el socket sd
-    int envioMensaje= sendto(sock.sd, obj.data(), obj.size(), 0, &sock.sa, sock.sa_len);
+    int envioMensaje= sendto(sock.sd, obj.data(), obj.size(), 0, &sa, sa_len);
 
     return 0;
 }
@@ -80,8 +79,8 @@ bool operator== (const Socket &s1, const Socket &s2)
     //de la estructura sockaddr_in de los Sockets s1 y s2
     //Retornar false si alguno difiere
 
-    struct sockaddr_in* addrIn_Socket1 = (struct sockaddr_in*)&(s1.sa);
-    struct sockaddr_in* addrIn_Socket2 = (struct sockaddr_in*)&(s2.sa);
+    struct sockaddr_in* addrIn_Socket1 = (struct sockaddr_in*)&s1.sa;
+    struct sockaddr_in* addrIn_Socket2 = (struct sockaddr_in*)&s2.sa;
 
     //Miramos si los valores son iguales para ver si los sockets son iguales;
     return(addrIn_Socket1->sin_family == addrIn_Socket2->sin_family && addrIn_Socket1->sin_port == addrIn_Socket2->sin_port &&

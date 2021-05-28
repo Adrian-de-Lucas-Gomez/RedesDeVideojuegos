@@ -20,7 +20,7 @@ void ChatMessage::to_bin()
     //Escribimos el nombre del jugador
         memcpy(aux, nick.c_str(), sizeof(char) * 8);  //Nombre de 8 caracteres
         //Movemos el puntero de escritura
-        aux += sizeof(int16_t) * 8;
+        aux += sizeof(char) * 8;
 
     //Escribimos el mensaje
         memcpy(aux, message.c_str(), sizeof(char)*80 );    //Mensaje de 80 caracteres
@@ -39,13 +39,13 @@ int ChatMessage::from_bin(char * bobj)
     char *aux= _data;   //Guardamos el puntero
     
     //Leemos primero TYPE
-        memcpy(aux, &type, sizeof(uint8_t));
+        memcpy(&type, aux, sizeof(uint8_t));
         //Movemos el puntero de escritura
         aux += sizeof(uint8_t);
 
     //Leemos el nombre del jugador
         nick = aux;
-        aux += sizeof(int16_t) * 8;
+        aux += sizeof(char) * 8;
 
     //Leemos el mensaje
         message = aux;
@@ -71,9 +71,9 @@ void ChatServer::do_messages()
         ChatMessage mensaje;
         Socket *sock= &socket;
 
-        std::unique_ptr<Socket> cliente(sock);
-
         socket.recv(mensaje, sock);
+        
+        std::unique_ptr<Socket> cliente(sock);
 
         // - LOGIN: Añadir al vector clients
         // - LOGOUT: Eliminar del vector clients
