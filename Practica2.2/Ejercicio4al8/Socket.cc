@@ -3,12 +3,12 @@
 #include "Serializable.h"
 #include "Socket.h"
 
-Socket::Socket(const char * address, const char * port):sd(-1)
+Socket::Socket(const char *address, const char *port) : sd(-1)
 {
     //Construir un socket de tipo AF_INET y SOCK_DGRAM usando getaddrinfo.
     //Con el resultado inicializar los miembros sd, sa y sa_len de la clase
     struct addrinfo infoaddres;
-    struct addrinfo * sockaddr;
+    struct addrinfo *sockaddr;
 
     memset((void*) &infoaddres, 0, sizeof(struct addrinfo));    //Reservamos memoria
 
@@ -22,7 +22,7 @@ Socket::Socket(const char * address, const char * port):sd(-1)
         std::cout << "Error: Servicio desconocido\n";
     }
     
-    int sd = socket( sockaddr->ai_family, sockaddr->ai_socktype,0);
+    sd = socket( sockaddr->ai_family, sockaddr->ai_socktype,0);
 
     if(sd == -1)   //Ha habido un error y acaba el programa
     { 
@@ -68,9 +68,8 @@ int Socket::send(Serializable& obj, const Socket& sock)
     //Serializar el objeto
     obj.to_bin();   //Llamamos al metodo de serializacion del objeto a mandar
     //Enviar el objeto binario a sock usando el socket sd
-    int envioMensaje= sendto(sock.sd, obj.data(), obj.size(), 0, &sa, sa_len);
-
-    return 0;
+    int envioMensaje= sendto(sock.sd, obj.data(), obj.size(), 0, &sock.sa, sock.sa_len);
+	return 0;
 }
 
 bool operator== (const Socket &s1, const Socket &s2)
@@ -79,8 +78,8 @@ bool operator== (const Socket &s1, const Socket &s2)
     //de la estructura sockaddr_in de los Sockets s1 y s2
     //Retornar false si alguno difiere
 
-    struct sockaddr_in* addrIn_Socket1 = (struct sockaddr_in*)&s1.sa;
-    struct sockaddr_in* addrIn_Socket2 = (struct sockaddr_in*)&s2.sa;
+    struct sockaddr_in* addrIn_Socket1 = (struct sockaddr_in*)&(s1.sa);
+    struct sockaddr_in* addrIn_Socket2 = (struct sockaddr_in*)&(s2.sa);
 
     //Miramos si los valores son iguales para ver si los sockets son iguales;
     return(addrIn_Socket1->sin_family == addrIn_Socket2->sin_family && addrIn_Socket1->sin_port == addrIn_Socket2->sin_port &&

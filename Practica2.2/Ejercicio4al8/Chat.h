@@ -97,6 +97,8 @@ public:
      * @param p puerto del servidor
      * @param n nick del usuario
      */
+    bool desconectado=false;
+
     ChatClient(const char * s, const char * p, const char * n):socket(s, p),
         nick(n){};
 

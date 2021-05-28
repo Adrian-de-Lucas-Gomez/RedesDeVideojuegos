@@ -151,7 +151,7 @@ void ChatClient::logout()
 
 void ChatClient::input_thread()
 {
-    while (true)
+    while (!desconectado)
     {
         // Leer stdin con std::getline
         // Enviar al servidor usando socket
@@ -163,6 +163,7 @@ void ChatClient::input_thread()
         if(msg == "LogOut"){
             //Indica que queremos salirnos y se manda LogOut
             men.type = ChatMessage::LOGOUT;
+            desconectado = true;
         }
         else{
             //Si no se manda como mensaje normal
@@ -176,14 +177,16 @@ void ChatClient::input_thread()
 
 void ChatClient::net_thread()
 {
-    while(true)
+    while(!desconectado)
     {
         ChatMessage recibido;
         //Recibir Mensajes de red
         socket.recv(recibido);
 
-        //Mostrar en pantalla el mensaje de la forma "nick: mensaje"
-        std::cout << recibido.nick << "dijo: " << recibido.message << "\n";
+        if(recibido.nick != nick){   //SI es mi mensaje se ignora
+            //Mostrar en pantalla el mensaje de la forma "nick: mensaje"
+            std::cout << recibido.nick << " dijo: " << recibido.message << "\n";
+        }
     }
 }
 
