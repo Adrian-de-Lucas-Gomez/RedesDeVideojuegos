@@ -12,8 +12,7 @@ Socket::Socket(const char * address, const char * port):sd(-1)
 
     memset((void*) &infoaddres, 0, sizeof(struct addrinfo));    //Reservamos memoria
 
-    //infoaddres.ai_flags = AI_PASSIVE;
-    infoaddres.ai_family = AF_INET; //Mira para IPv4 y para IPv6
+    infoaddres.ai_family = AF_INET; //Mira para IPv4
     infoaddres.ai_socktype = SOCK_DGRAM; //UDP
 
     //Probamos a ve si aparece la direccion en la red
@@ -34,6 +33,11 @@ Socket::Socket(const char * address, const char * port):sd(-1)
     sa = *sockaddr->ai_addr;
     sa_len = sockaddr->ai_addrlen;
 
+}
+
+Socket::Socket(struct sockaddr *_sa, socklen_t _sa_len) : sd(-1), sa(*_sa), sa_len(_sa_len){
+    sd = socket(AF_INET, SOCK_DGRAM, 0);
+    bind();
 }
 
 int Socket::recv(Serializable &obj, Socket * &sock)
